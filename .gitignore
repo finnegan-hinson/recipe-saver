@@ -48,3 +48,4 @@ build/
 .navigation
 captures/
 output.json 
+**/.DS_Store
