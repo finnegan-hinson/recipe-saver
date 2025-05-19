@@ -224,3 +224,4 @@ fun HeadingText(
     modifier = modifier
         .padding(2.dp)
 )
+
