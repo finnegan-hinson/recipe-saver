@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.google.devtools.ksp)
+    kotlin("plugin.serialization") version "2.1.21"
 }
 
 android {

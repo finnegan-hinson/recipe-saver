@@ -11,20 +11,20 @@ fun getRecipes(): MutableList<RecipeCard> = mutableListOf(
         ingredients = listOf(
             Ingredient(
                 ingredientName = "grated Parmesan",
-                amount = BigDecimal(2),
+                amount = 2.toDouble(),
                 unit = Unit.OUNCE
             ),
             Ingredient(
                 ingredientName = "whole large eggs",
-                amount = BigDecimal(2),
+                amount = 2.toDouble(),
             ),
             Ingredient(
                 ingredientName = "whole large eggs",
-                amount = BigDecimal(2),
+                amount = 2.toDouble(),
             ),
             Ingredient(
                 ingredientName = "heavy cream",
-                amount = BigDecimal(0.5),
+                amount = 0.5,
                 unit = Unit.CUP
             ),
             Ingredient(
@@ -32,35 +32,35 @@ fun getRecipes(): MutableList<RecipeCard> = mutableListOf(
             ),
             Ingredient(
                 ingredientName = "dry pasta",
-                amount = BigDecimal(1),
+                amount = 1.toDouble(),
                 unit = Unit.POUND
             ),
             Ingredient(
                 ingredientName = "frozen peas",
-                amount = BigDecimal(1),
+                amount = 1.toDouble(),
                 unit = Unit.CUP
             ),
             Ingredient(
                 ingredientName = "canola or vegetable oil",
-                amount = BigDecimal(1),
+                amount = 1.toDouble(),
                 unit = Unit.TEASPOON
             ),
             Ingredient(
                 ingredientName = "bacon or pancetta",
-                amount = BigDecimal(3),
+                amount = 3.toDouble(),
                 unit = Unit.OUNCE
             ),
             Ingredient(
                 ingredientName = "scallions",
-                amount = BigDecimal(3),
+                amount = 3.toDouble(),
             ),
             Ingredient(
                 ingredientName = "garlic cloves",
-                amount = BigDecimal(3),
+                amount = 3.toDouble(),
             ),
             Ingredient(
                 ingredientName = "parsley and mint",
-                amount = BigDecimal(1),
+                amount = 1.toDouble(),
                 unit = Unit.CUP
             ),
         ),
