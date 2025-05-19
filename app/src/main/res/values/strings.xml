@@ -2,4 +2,7 @@
     <string name="app_name">Recipe Saver</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="recipe_list">Recipe List</string>
+    <string name="full_recipe">Full Recipe</string>
+    <string name="bookmarks">Bookmarks</string>
+    <string name="more">More details</string>
 </resources>

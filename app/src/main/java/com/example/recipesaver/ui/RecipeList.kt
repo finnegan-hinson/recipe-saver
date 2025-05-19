@@ -14,19 +14,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,25 +36,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.recipesaver.R
 import com.example.recipesaver.data.Ingredient
 import com.example.recipesaver.data.RecipeCard
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 import kotlin.math.ceil
 
-const val ENTRIES_PER_PAGE = 6
+const val ENTRIES_PER_PAGE = 4
 
-@JvmOverloads
 @Composable
 fun RecipeList(
-    viewModel: RecipeCardViewModel = hiltViewModel()
+    recipes: List<RecipeCard>,
+    onBookmarkPageClicked: () -> Unit,
+    onMoreClicked: (RecipeCard) -> Unit
 ) {
-    val totalPages = ceil(viewModel.recipeCards.size.toFloat() / ENTRIES_PER_PAGE).toInt()
-    val pagerState = rememberPagerState(pageCount = {
-        totalPages
-    })
+    val totalPages = ceil(recipes.size.toFloat() / ENTRIES_PER_PAGE).toInt()
+    val pagerState = rememberPagerState(pageCount = { totalPages })
     val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = Modifier
@@ -70,18 +66,34 @@ fun RecipeList(
                 .align(Alignment.CenterHorizontally),
             isLarge = true
         )
+
+        Button(
+            modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
+            onClick = { onBookmarkPageClicked() })
+        {
+            Icon(
+                imageVector = Icons.Default.FavoriteBorder,
+                contentDescription = "Bookmarks",
+            )
+            Spacer(Modifier.size(4.dp))
+            Text(stringResource(R.string.bookmarks))
+        }
+
         HorizontalPager(
             state = pagerState,
         ) { page ->
             Column {
                 // Calculate which items belong on this page
                 val startIndex = page * ENTRIES_PER_PAGE
-                val pageItems = viewModel.recipeCards.subList(
+                val pageItems = recipes.subList(
                     startIndex,
-                    minOf(startIndex + ENTRIES_PER_PAGE, viewModel.recipeCards.size)
+                    minOf(startIndex + ENTRIES_PER_PAGE, recipes.size)
                 )
                 pageItems.forEach { recipeCard ->
-                    RecipeRow(recipeCard)
+                    RecipeRow(
+                        recipeCard = recipeCard,
+                        onMoreClicked = onMoreClicked
+                    )
                 }
             }
         }
@@ -90,7 +102,7 @@ fun RecipeList(
                 .wrapContentHeight()
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally)
-                .padding(bottom = 24.dp),
+                .padding(bottom = 8.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.Bottom
         ) {
@@ -118,15 +130,14 @@ fun RecipeList(
 }
 
 @Composable
-fun RecipeRow(recipeCard: RecipeCard) {
-    var expanded by remember { mutableStateOf(false) }
-
+fun RecipeRow(
+    recipeCard: RecipeCard,
+    moreEnabled: Boolean = true,
+    onMoreClicked: (RecipeCard) -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(
-                onClick = { expanded = !expanded }
-            )
             .padding(10.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -134,54 +145,43 @@ fun RecipeRow(recipeCard: RecipeCard) {
     ) {
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
                 .padding(8.dp),
             verticalArrangement = Arrangement.Center,
         ) {
-            // Title
-            HeadingText(
-                text = recipeCard.recipeName,
-            )
+            HeadingDetails(recipeCard)
 
-            // Author
-            recipeCard.author?.let {
-                Text(
-                    text = it,
-                    fontStyle = FontStyle.Italic,
-                    modifier = Modifier.padding(1.dp)
-                )
-            }
-
-            // Servings
-            recipeCard.servings?.let {
-                Text(text = "$it Servings")
-            }
-
-            if (expanded) {
-                Spacer(modifier = Modifier.padding(bottom = 3.dp))
-
-                // Ingredients
-                Column(
-                    modifier = Modifier.padding(vertical = 3.dp)
-                ) {
-                    recipeCard.ingredients.forEach { ingredient ->
-                        IngredientRow(ingredient)
-                    }
+            if (moreEnabled) {
+                TextButton({
+                    onMoreClicked(recipeCard)
                 }
-                // Directions
-                Column(
-                    modifier = Modifier.padding(vertical = 3.dp)
                 ) {
-                    recipeCard.directions.forEachIndexed { index, direction ->
-                        DirectionRow(
-                            direction = direction,
-                            number = index + 1
-                        )
-                    }
+                    Text(stringResource(R.string.more))
                 }
             }
+
         }
+    }
+}
 
+@Composable
+fun HeadingDetails(recipeCard: RecipeCard) {
+    // Title
+    HeadingText(
+        text = recipeCard.recipeName,
+    )
+
+    // Author
+    recipeCard.author?.let {
+        Text(
+            text = it,
+            fontStyle = FontStyle.Italic,
+            modifier = Modifier.padding(1.dp)
+        )
+    }
+
+    // Servings
+    recipeCard.servings?.let {
+        Text(text = "$it Servings")
     }
 }
 
@@ -192,7 +192,7 @@ fun IngredientRow(
 ) {
     Row {
         ingredient.amount?.let {
-            Text("${it * BigDecimal(quantity)} ")
+            Text("${it * quantity} ")
         }
         ingredient.unit?.let {
             Text("${it.abbreviation} ")
@@ -224,3 +224,4 @@ fun HeadingText(
     modifier = modifier
         .padding(2.dp)
 )
+
